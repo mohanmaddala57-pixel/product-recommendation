@@ -626,5 +626,5 @@ if recommend_btn:
                         st.write("**🏷 Tags:**")
                         st.write(tags)
 
->>>>>>> 333c9e9c1f050100a0274cc03e83bc075f722f33
+
                 st.success("✅ Similar product based on Machine Learning recommendation.")
