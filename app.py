@@ -139,10 +139,10 @@ categories = ["All"] + sorted(
     .unique()
     .tolist()
 )
-
 selected_category = st.sidebar.selectbox(
     "Select Category",
-    categories
+    categories,
+    key="category_select"
 )
 
 if selected_category != "All":
