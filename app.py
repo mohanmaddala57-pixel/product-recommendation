@@ -438,11 +438,11 @@ categories = ["All"] + sorted(
 
 selected_category = st.sidebar.selectbox(
     "Select Category",
-    categories
+    categories,
+    key="category_select"
 )
 
 if selected_category != "All":
-
     filtered_products = filtered_products[
         filtered_products["Category"] == selected_category
     ]
@@ -453,7 +453,8 @@ sort_option = st.sidebar.selectbox(
         "Default",
         "Price: Low to High",
         "Price: High to Low"
-    ]
+    ],
+    key="sort_option"
 )
 
 min_price = int(filtered_products["Price_Num"].min())
@@ -463,11 +464,14 @@ price_range = st.sidebar.slider(
     "Select Price Range ($)",
     min_price,
     max_price,
-    (min_price, max_price)
+    (min_price, max_price),
+    key="price_slider"
 )
 
 filtered_products = filtered_products[
     (filtered_products["Price_Num"] >= price_range[0]) &
+    (filtered_products["Price_Num"] <= price_range[1])
+]
     (filtered_products["Price_Num"] <= price_range[1])
 ]
 
