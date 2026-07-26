@@ -439,7 +439,7 @@ categories = ["All"] + sorted(
 selected_category = st.sidebar.selectbox(
     "Select Category",
     categories,
-    key="category_select"
+    key="category_select_2"
 )
 
 if selected_category != "All":
