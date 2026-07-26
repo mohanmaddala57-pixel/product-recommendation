@@ -32,6 +32,8 @@ Discover Similar Products using Machine Learning
 
 # ---------------- Price Cleaning ---------------- #
 
+USD_TO_INR = 83.0  # conversion rate (update as needed)
+
 price = (
     products["Selling Price"]
     .astype(str)
@@ -41,6 +43,30 @@ price = (
 
 products["Price_Num"] = pd.to_numeric(price, errors="coerce")
 products["Price_Num"] = products["Price_Num"].fillna(0)
+
+# Convert to INR for display and filtering
+products["Price_INR"] = products["Price_Num"] * USD_TO_INR
+
+
+def format_inr(amount):
+    """Format a number as Indian Rupees with Indian-style comma grouping."""
+    amount = round(amount)
+    s = str(amount)
+
+    if len(s) <= 3:
+        formatted = s
+    else:
+        last3 = s[-3:]
+        rest = s[:-3]
+        parts = []
+        while len(rest) > 2:
+            parts.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            parts.insert(0, rest)
+        formatted = ",".join(parts) + "," + last3
+
+    return f"₹{formatted}"
 
 # ---------------- Dashboard ---------------- #
 
@@ -52,14 +78,14 @@ total_categories = (
     .nunique()
 )
 
-avg_price = products["Price_Num"].mean()
+avg_price = products["Price_INR"].mean()
 
 c1, c2, c3, c4 = st.columns(4)
 
 c1.metric("📦 Products", total_products)
 c2.metric("🔍 Search", "Ready")
 c3.metric("📂 Categories", total_categories)
-c4.metric("💰 Avg Price", f"${avg_price:.2f}")
+c4.metric("💰 Avg Price", format_inr(avg_price))
 
 st.divider()
 
@@ -129,11 +155,11 @@ sort_option = st.sidebar.selectbox(
     key="sort_option"
 )
 
-min_price = int(filtered_products["Price_Num"].min())
-max_price = int(filtered_products["Price_Num"].max())
+min_price = int(filtered_products["Price_INR"].min())
+max_price = int(filtered_products["Price_INR"].max())
 
 price_range = st.sidebar.slider(
-    "Select Price Range ($)",
+    "Select Price Range (₹)",
     min_price,
     max_price,
     (min_price, max_price),
@@ -141,14 +167,14 @@ price_range = st.sidebar.slider(
 )
 
 filtered_products = filtered_products[
-    (filtered_products["Price_Num"] >= price_range[0]) &
-    (filtered_products["Price_Num"] <= price_range[1])
+    (filtered_products["Price_INR"] >= price_range[0]) &
+    (filtered_products["Price_INR"] <= price_range[1])
 ]
 
 if sort_option == "Price: Low to High":
-    filtered_products = filtered_products.sort_values("Price_Num")
+    filtered_products = filtered_products.sort_values("Price_INR")
 elif sort_option == "Price: High to Low":
-    filtered_products = filtered_products.sort_values("Price_Num", ascending=False)
+    filtered_products = filtered_products.sort_values("Price_INR", ascending=False)
 
 st.sidebar.success(f"📦 Products Found: {len(filtered_products)}")
 
@@ -191,7 +217,7 @@ with col2:
     )
 
     st.write(f"**📂 Category:** {selected_data['Category']}")
-    st.success(f"💰 Price : {selected_data['Selling Price']}")
+    st.success(f"💰 Price : {format_inr(selected_data['Price_INR'])}")
 
     rating = random.choice([
         "⭐⭐⭐⭐⭐ (5.0)",
@@ -265,7 +291,7 @@ if recommend_btn:
                 )
 
                 st.write(f"**📂 Category:** {item['Category']}")
-                st.success(f"💰 Price : {item['Selling Price']}")
+                st.success(f"💰 Price : {format_inr(item['Price_INR'])}")
                 st.info(f"🎯 Similarity Score : {item['Similarity']}%")
 
                 if "tags" in item.index:
