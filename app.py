@@ -500,6 +500,7 @@ selected_product = st.selectbox(
     "",
     filtered_products["Product Name"].tolist(),
     label_visibility="collapsed"
+    key="product_selector"
 )
 
 selected_data = products[
