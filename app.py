@@ -472,8 +472,7 @@ filtered_products = filtered_products[
     (filtered_products["Price_Num"] >= price_range[0]) &
     (filtered_products["Price_Num"] <= price_range[1])
 ]
-    (filtered_products["Price_Num"] <= price_range[1])
-]
+    
 
 if sort_option == "Price: Low to High":
 
